@@ -23,7 +23,6 @@ var data = {
 })();
 
 
-
 // User clicked on the add button
 // If there is any text inside the item field, add that text to the todo list
 document.getElementById('add').addEventListener('click', function() {
@@ -45,7 +44,7 @@ function addItem (value) {
   document.getElementById('item').value = '';
 
   data.todo.push({title: value});
-  dataObjectUpdated();
+  dataObjectUpdated('add', {title: value});
 }
 
 function renderTodoList(data) {
@@ -62,7 +61,21 @@ function renderTodoList(data) {
   }
 }
 
-function dataObjectUpdated() {
+function dataObjectUpdated(type, item) {
+  switch(type){
+    case 'add':
+        fetch(`${server}/todos`, {
+          method: "POST",
+          headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(item)
+        })
+      break;
+    default:
+      break;
+  }
 }
 
 function removeItem() {
