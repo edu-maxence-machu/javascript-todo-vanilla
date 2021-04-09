@@ -2,23 +2,18 @@ const express = require('express');
 
 const app = express();
 
-app.use((req, res, next) => {
-  console.log('1. Réception de la requête');
-  next();
-});
-
-app.use((req, res, next) => {
-  res.status(201);
-  next();
-});
-
-app.use((req, res, next) => {
-  res.json({ message: '3. Vous recevez une réponse HTTP 201' });
-  next();
-});
-
-app.use((req, res, next) => {
-  console.log('4. Nous avons envoyé la réponse');
-});
+app.use('/todos', (req, res, next) => {
+    const stuff = [
+      {
+        title: "Cours Node.js",
+        completed: false
+      },
+      {
+        title: "Exercice matinée",
+        completed: false
+      },
+    ];
+    res.status(200).json(stuff);
+  });
 
 module.exports = app;
