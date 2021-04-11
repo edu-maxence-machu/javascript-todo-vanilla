@@ -73,6 +73,16 @@ function dataObjectUpdated(type, item) {
           body: JSON.stringify(item)
         })
       break;
+    case 'edit':
+      fetch(`${server}/todos/${item.id}`, {
+        method: "PUT",
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(item)
+      })
+    break;
     default:
       break;
   }
@@ -100,6 +110,12 @@ function completeItem() {
   var id = parent.id;
   var value = item.innerText;
 
+  var todo = {
+    id: item.dataset.id,
+    title: value,
+    completed: id === 'todo' ? true : false
+  }
+  
   if (id === 'todo') {
     data.todo.splice(data.todo.indexOf(value), 1);
     data.completed.push(value);
@@ -107,7 +123,7 @@ function completeItem() {
     data.completed.splice(data.completed.indexOf(value), 1);
     data.todo.push(value);
   }
-  dataObjectUpdated();
+  dataObjectUpdated('edit', todo);
 
   // Check if the item should be added to the completed list or to re-added to the todo list
   var target = (id === 'todo') ? document.getElementById('completed'):document.getElementById('todo');
@@ -123,6 +139,8 @@ function addItemToDOM(todo, completed) {
 
   var item = document.createElement('li');
   item.innerText = todo.title;
+
+  item.setAttribute('data-id', todo._id);
 
   var buttons = document.createElement('div');
   buttons.classList.add('buttons');
