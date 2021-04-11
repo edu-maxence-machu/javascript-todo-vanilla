@@ -52,7 +52,9 @@ server.on('listening', () => {
 
 // Établissement de la connexion à Socket.io
 io.on('connection', (socket) =>{
-  console.log(`Connecté au client ${socket.id}`)
+  console.log(`Connecté au client ${socket.id}`);
+  io.emit('message','Hello i\'m the server');
+
 })
 
 server.listen(port);
