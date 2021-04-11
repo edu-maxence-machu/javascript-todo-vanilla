@@ -36,6 +36,12 @@ const errorHandler = error => {
 };
 
 const server = http.createServer(app);
+const io = require('socket.io')(server, {
+  cors: {
+    origin: "http://127.0.0.1:5500",
+    methods: ["GET", "POST"]
+  }
+})
 
 server.on('error', errorHandler);
 server.on('listening', () => {
@@ -43,5 +49,10 @@ server.on('listening', () => {
   const bind = typeof address === 'string' ? 'pipe ' + address : 'port ' + port;
   console.log('Listening on ' + bind);
 });
+
+// Établissement de la connexion à Socket.io
+io.on('connection', (socket) =>{
+  console.log(`Connecté au client ${socket.id}`)
+})
 
 server.listen(port);
