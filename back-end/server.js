@@ -52,9 +52,17 @@ server.on('listening', () => {
 
 // Établissement de la connexion à Socket.io
 io.on('connection', (socket) =>{
-  console.log(`Connecté au client ${socket.id}`);
-  io.emit('message','Hello i\'m the server');
+  socket.on('disconnect', () => {
+    console.log(`user ${socket.id} disconnected`);
+    io.emit('message', `Bye ${socket.id}`);
 
+  });
+
+  console.log(`Connecté au client ${socket.id}`);
+
+  socket.on('message', (msg) => {
+    io.emit('message', msg);
+  });
 })
 
 server.listen(port);
