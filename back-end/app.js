@@ -53,4 +53,10 @@ app.put('/todos/:id', (req, res, next) => {
     .catch(error => res.status(400).json({ error }));
 });
 
+app.delete('/todos/:id', (req, res, next) => {
+  sTodo.deleteOne({ _id: req.params.id })
+    .then(() => res.status(200).json({ message: 'Todo supprimée'}))
+    .catch(error => res.status(400).json({ error }));
+});
+
 module.exports = app;

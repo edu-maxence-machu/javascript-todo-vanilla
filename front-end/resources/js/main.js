@@ -83,6 +83,16 @@ function dataObjectUpdated(type, item) {
         body: JSON.stringify(item)
       })
     break;
+    case 'delete':
+      fetch(`${server}/todos/${item.id}`, {
+        method: "DELETE",
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(item)
+      })
+    break;
     default:
       break;
   }
@@ -94,12 +104,18 @@ function removeItem() {
   var id = parent.id;
   var value = item.innerText;
 
+  var todo = {
+    id: item.dataset.id,
+    title: value,
+    completed: id === 'todo' ? true : false
+  }
+
   if (id === 'todo') {
     data.todo.splice(data.todo.indexOf(value), 1);
   } else {
     data.completed.splice(data.completed.indexOf(value), 1);
   }
-  dataObjectUpdated();
+  dataObjectUpdated('delete', todo);
 
   parent.removeChild(item);
 }
