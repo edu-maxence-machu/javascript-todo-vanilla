@@ -3,10 +3,11 @@ const { getOneTodo, createTodo, updateTodo, deleteTodo, getAllTodo } = require('
 const router = express.Router();
 const sTodo = require('../models/todo');
 
-  
+const mAuth = require('../middlewares/auth');
+
 router.get('/', getAllTodo);
 
-router.post('/', createTodo);  
+router.post('/', mAuth, createTodo);  
 router.get('/:id', getOneTodo);
 router.put('/:id', updateTodo);  
 router.delete('/:id', deleteTodo);

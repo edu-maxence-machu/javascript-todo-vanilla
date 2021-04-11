@@ -76,7 +76,8 @@ function dataObjectUpdated(type, item) {
           method: "POST",
           headers: {
             'Accept': 'application/json',
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + token,
           },
           body: JSON.stringify(item)
         })
@@ -86,7 +87,8 @@ function dataObjectUpdated(type, item) {
         method: "PUT",
         headers: {
           'Accept': 'application/json',
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + token,
         },
         body: JSON.stringify(item)
       })
@@ -96,7 +98,8 @@ function dataObjectUpdated(type, item) {
         method: "DELETE",
         headers: {
           'Accept': 'application/json',
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + token,
         },
         body: JSON.stringify(item)
       })
