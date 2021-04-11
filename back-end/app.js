@@ -39,6 +39,12 @@ app.get('/todos', (req, res, next) => {
   sTodo.find()
   .then(todos => res.status(200).json(todos))
   .catch(error => res.status(400).json({ error }));
-  });
+});
+
+app.get('/todos/:id', (req, res, next) => {
+  sTodo.findOne({ _id: req.params.id })
+    .then(thing => res.status(200).json(thing))
+    .catch(error => res.status(404).json({ error }));
+});
 
 module.exports = app;
