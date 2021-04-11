@@ -9,8 +9,16 @@ var data = {
   completed: []
 };
 
+var token = localStorage.getItem('usr_token') || null;
+
 (async function() {
   "use strict";
+
+  if(token){
+    loginFromToken(token);
+  }
+
+  console.log(token);
 
   const resp = await fetch(`${server}/todos`)
   const todos = await resp.json();
@@ -180,4 +188,136 @@ function addItemToDOM(todo, completed) {
   item.appendChild(buttons);
 
   list.insertBefore(item, list.childNodes[0]);
+}
+
+let btn_register = document.getElementById('register-choice');
+let btn_login = document.getElementById('login-choice');
+
+let box_login = document.getElementById('login');
+let box_register = document.getElementById('register');
+let box_choice = document.getElementById('choice');
+
+btn_register.addEventListener('click', () => {
+  box_choice.style.display = 'none';
+  box_register.style.display = 'block';
+})
+
+btn_login.addEventListener('click', () => {
+  box_choice.style.display = 'none';
+  box_login.style.display = 'block';
+})
+
+
+document.getElementById('login').addEventListener('submit', (e) => {
+  e.preventDefault();
+
+  let form = document.forms.login;
+
+  console.log(form.elements.password.value)
+  
+  fetch(`${server}/auth/login`, {
+    method: "POST",
+    headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      email: form.elements.email.value,
+      password: form.elements.password.value
+    })
+  }).then((response) => {
+    return response.json();
+  }).then(json => {
+    if(json.error){
+      alert(json.error)
+      return;
+    } else {
+      sayHello(json);
+      saveJWT(json.token);
+    }
+  })
+})
+
+document.getElementById('register').addEventListener('submit', (e) => {
+  e.preventDefault();
+  
+  let form = document.forms.register;
+
+  fetch(`${server}/auth/register`, {
+    method: "POST",
+    headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      email: form.elements.email.value,
+      password: form.elements.password.value
+    })
+  }).then((response) => {
+    return response.json();
+  }).then(json => {
+    if(json.error){
+      alert(json.error)
+      return;
+    } else {
+      sayHello(json);
+      saveJWT(json.token);
+    }
+  })
+})
+
+function sayHello(data) {
+    
+  box_login.style.display = "none";
+  box_register.style.display = "none";
+  box_choice.style.display = "none";
+
+  let parent = document.createElement('div');
+
+  let title = document.createElement('p');
+  title.innerText = "Hello " + data.name + " !";
+
+  let button = document.createElement('button');
+  button.onclick = logout;
+  button.innerText = 'Logout'
+
+  parent.appendChild(title);
+  parent.appendChild(button);
+
+  document.getElementById('user-bottom').append(parent)
+}
+
+function loginFromToken(token){
+  fetch(`${server}/auth/login-from-token`, {
+    method: "POST",
+    headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer ' + token,
+    },
+    body: JSON.stringify({})
+  }).then((response) => {
+    return response.json();
+  }).then(json => {
+    if(json.error){
+      alert(json.error)
+      return;
+    } else {
+      sayHello(json)
+    }
+  })
+}
+
+function saveJWT(token){
+  window.localStorage.setItem('usr_token', token)
+}
+
+function removeJWT(){
+  window.localStorage.removeItem('usr_token');
+  token = null;
+}
+
+function logout(){
+  removeJWT();
+  location.reload();
 }

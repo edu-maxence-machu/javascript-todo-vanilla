@@ -25,7 +25,7 @@ app.use(express.json());
 Routes
 */
 const todoRoutes = require('./routes/todo');
-const userRoutes = require('./routes/user')
+const userRoutes = require('./routes/user');
 app.use('/todos', todoRoutes);
 app.use('/auth', userRoutes);
 
