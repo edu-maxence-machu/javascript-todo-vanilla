@@ -28,14 +28,14 @@ var data = {
 document.getElementById('add').addEventListener('click', function() {
   var value = document.getElementById('item').value;
   if (value) {
-    addItem({title: value});
+    addItem({title: value, completed: false});
   }
 });
 
 document.getElementById('item').addEventListener('keydown', function (e) {
   var value = this.value;
   if ((e.code === 'Enter' || e.code === 'NumpadEnter') && value) {
-    addItem({title: value});
+    addItem({title: value, completed: false});
   }
 });
 
@@ -43,8 +43,8 @@ function addItem (value) {
   addItemToDOM(value);
   document.getElementById('item').value = '';
 
-  data.todo.push({title: value});
-  dataObjectUpdated('add', {title: value});
+  data.todo.push(value);
+  dataObjectUpdated('add', value);
 }
 
 function renderTodoList(data) {
