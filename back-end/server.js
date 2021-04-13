@@ -54,14 +54,33 @@ server.on('listening', () => {
 io.on('connection', (socket) =>{
   socket.on('disconnect', () => {
     console.log(`user ${socket.id} disconnected`);
-    io.emit('message', `Bye ${socket.id}`);
-
+    //io.emit('message', `Bye ${socket.id}`);
   });
 
   console.log(`Connecté au client ${socket.id}`);
 
+  socket.on('join', (prev, room) => {
+    
+    if(prev !== ''){
+      socket.leave(prev);
+    }    
+    socket.join(room);
+
+  });
+
   socket.on('message', (msg) => {
-    io.emit('message', msg);
+    // On envoie un message à la room sélectionnée
+    console.log('room:', msg.room);
+    console.log('message:', msg.message);
+    io.in(msg.room).emit('message', msg.message);
+  });
+
+  io.of("/").adapter.on("create-room", (room) => {
+    console.log(`room ${room} was created`);
+  });
+  
+  io.of("/").adapter.on("join-room", (room, id) => {
+    console.log(`socket ${id} has joined room ${room}`);
   });
 })
 

@@ -9,45 +9,103 @@
     <link href="https://fonts.googleapis.com/css?family=Roboto:400,500,700" rel="stylesheet">
 
     <!-- Stylesheets -->
-    <link rel="stylesheet" type="text/css" href="resources/css/reset.min.css">
-    <link rel="stylesheet" type="text/css" href="resources/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/skeleton/2.0.4/skeleton.min.css">
     
     <title>Socket.io</title>
 </head>
 <body>
-    <h1>Démonstration Socket.io</h1>
 
-    <ul id="list">
+    <main class="container">
+
+        <div class="row">
+            <h1>AFP News Feed</h1>
+
+                <div class="row">
+                    <div class="columns">
+                        <label for="room-select">Topic</label>
+                        <select class="u-full-width" id="room-select">
+                          <option value="sport">Sport</option>
+                          <option value="politique">Politique</option>
+                          <option value="films">Cinéma</option>
+                        </select>
+                    </div>
+                </div>
+
+
+                <form action="" name="broadcast-form" id="broadcast-section">
+                    <div class="row">
+                        <div class="six columns">
+                            <label for="message">Message à envoyer</label>
+                            <input class="u-full-width" type="text" placeholder="Votre message" id="message" name="message" required/>
+                        </div>
+    
+                        <div class="six columns">
+                            <label for="broadcast-room-select">Topic sur lequel envoyer</label>
+                            <select class="u-full-width" id="room-select" name="topic">
+                              <option value="sport">Sport</option>
+                              <option value="politique">Politique</option>
+                              <option value="films">Cinéma</option>
+                            </select>
+                        </div>
+                    </div>
+    
+                    <div class="row">
+                        <div class="columns">
+                            <form action="" id="form-message">
+                                <button>Envoyer</button>
+                            </form>
+                        </div>
+                    </div>
+                </form>
+                
+                <ul id="list">
+
+                </ul>
+    
+        </div>
         
-    </ul>
 
-    <form action="" id="form">
-        <input type="text" id="input">
-        <button type="submit">Envoyer</button>
-    </form>
+
+    </main>
     
     <script src="https://cdn.socket.io/3.1.3/socket.io.min.js" integrity="sha384-cPwlPLvBTa3sKAgddT6krw0cJat7egBga3DJepJyrLl4Q9/5WLra3rrnMcyTyOnh" crossorigin="anonymous"></script>
+    
     <script>
         const socket = io('http://localhost:3000');
         const list = document.getElementById('list');
 
-        // écoute du socket news
+        // écoute du socket
         socket.on('message', function(msg){
-            console.log(msg)
+            console.log('Received', msg);
             let li = document.createElement('li');
             li.textContent = msg;
             list.appendChild(li);
         });
-    
-        var form = document.getElementById('form');
-        var input = document.getElementById('input');
 
-        form.addEventListener('submit', function(e) {
+        let selectRoom = document.getElementById('room-select');
+        let form = document.getElementById('broadcast-section');
+        let input = document.getElementById('input');
+        let prevRoom = '';
+
+        /*
+        ROOM SELECTION
+        */
+       selectRoom.addEventListener('change', (e) => {
+            let room = e.target.value;
+            socket.emit('join', prevRoom, room);
+            prevRoom = room;
+            list.innerHTML = '';
+       })
+
+        form.addEventListener('submit', (e) => {
             e.preventDefault();
-            if (input.value) {
-            socket.emit('message', input.value);
-            input.value = '';
-            }
+
+            let data = document.forms['broadcast-form'];
+
+            socket.emit('message', {
+                room: data['room-select'].value,
+                message: data['message'].value
+            });
         });
     </script>
 </body>
