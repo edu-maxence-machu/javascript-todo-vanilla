@@ -15,42 +15,31 @@
     <title>Socket.io</title>
 </head>
 <body>
-    <h1>Démonstration Socket.io</h1>
-
-    <form name="msgform" onsubmit="submitMessage(event)">
-        <input type="text" placeholder="Votre message" name="msg"/>
-        <button type="submit">Envoyer</button>
-    </form>
-
-    <ul id="list">
-
-    </ul>
+    <div id="circle" lass="circle">
+            <span id="number"></span>
+    </div>
 
     
     <script src="https://cdn.socket.io/3.1.3/socket.io.min.js" integrity="sha384-cPwlPLvBTa3sKAgddT6krw0cJat7egBga3DJepJyrLl4Q9/5WLra3rrnMcyTyOnh" crossorigin="anonymous"></script>
     <script>
         const socket = io('http://localhost:3000');
 
-        const list = document.getElementById('list');
+        let circle = document.getElementById('circle');
+        let number = document.getElementById('number');
+
+        circle.addEventListener('click', handleCookieClick)
+
+        function handleCookieClick(){
+            socket.emit('plus-one');
+        }
+
         socket.on('notif', function(msg){
             console.log('Nouvelle notification: ', msg);
         }) 
 
-        function submitMessage(e){
-            e.preventDefault();
-
-            console.log(document.forms.msgform.msg.value);
-
-            socket.emit('message', document.forms.msgform.msg.value);
-        }
-
-        socket.on('message', function(msg){
-            let li = document.createElement('li');
-            li.innerText = msg;
-            list.appendChild(li);
-            console.log('message reçu: ', msg)
+        socket.on('plus-one', function(nb){
+            number.innerText = nb;
         })
-    
 
     </script>
 </body>

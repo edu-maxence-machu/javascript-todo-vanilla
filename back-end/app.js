@@ -2,12 +2,7 @@ require('dotenv').config();
 const express = require('express');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
-const app = express();
-
-const sTodo = require('./models/todo');
-const socketIo = require('socket.io');
-
-
+const sClick = require('./models/click');
 
 // export one function that gets called once as the server is being initialized
 module.exports = function(app, server) {
@@ -39,45 +34,10 @@ require('./socket/socket')(io);
 
 app.use(function(req, res, next) {req.io = io; next(); });
 
-
-app.post('/todos', (req, res, next) => {
-
-  const todo = new sTodo({...req.body});
-  todo.save().then(() => {
-    res.status(201).json({
-      message: 'Todo enregistrée'
-    })
-  }).catch((error) => {
-    res.status(400).json({error})
-  })
-});
-
-app.get('/todos', (req, res, next) => {
-  sTodo.find()
-  .then(todos => res.status(200).json(todos))
-  .catch(error => res.status(400).json({ error }));
-});
-
-
-app.get('/todos/:id', (req, res, next) => {
-  sTodo.findOne({ _id: req.params.id })
-    .then(thing => res.status(200).json(thing))
-    .catch(error => res.status(404).json({ error }));
-});
-
-
-
-app.delete('/todos/:id', (req, res, next) => {
-  sTodo.deleteOne({ _id: req.params.id })
-    .then(() => res.status(200).json({ message: 'Todo supprimée'}))
+app.get('/stats/all', (req, res, next) => {
+  sClick.find()
+    .then(clicks => res.status(200).json(clicks))
     .catch(error => res.status(400).json({ error }));
-});
-
-
-app.put('/todos/:id', (req, res, next) => {
-  sTodo.updateOne({ _id: req.params.id }, { ...req.body, _id: req.params.id })
-    .then(() => res.status(200).json({ message: 'Todo modifiée'}))
-    .catch(error => res.status(400).json({ error }));
-});
+  });
 }
 
