@@ -5,8 +5,12 @@ const mongoose = require('mongoose');
 const app = express();
 
 const sTodo = require('./models/todo');
+const socketIo = require('socket.io');
 
-module.exports = function(server){
+
+
+// export one function that gets called once as the server is being initialized
+module.exports = function(app, server) {
 
 mongoose.connect(`mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@${process.env.DB_URL}/${process.env.DB_NAME}?retryWrites=true&w=majority`,
   { useNewUrlParser: true,
@@ -23,6 +27,17 @@ app.use((req, res, next) => {
   });
 
 app.use(express.json());
+
+const io = require('socket.io')(server, {
+  cors: {
+    origin: "http://127.0.0.1:5501",
+    methods: ["GET", "POST"]
+  }
+})
+
+require('./socket/socket')(io);
+
+app.use(function(req, res, next) {req.io = io; next(); });
 
 
 app.post('/todos', (req, res, next) => {
@@ -66,4 +81,3 @@ app.put('/todos/:id', (req, res, next) => {
 });
 }
 
-module.exports = app;
