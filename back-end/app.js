@@ -29,7 +29,7 @@ const io = require('socket.io')(server, {
   }
 })
 
-require('./socket/socket')(io);
+/*Nous pouvons utiliser la constante io pour le websocket*/
 
 app.use(function(req, res, next) {req.io = io; next(); });
 
