@@ -6,22 +6,6 @@ body {
   flex-direction: column;
   height: 100vh;
 }
-#circle {
-  width: 50vmin;
-  height: 50vmin;
-  border-radius: 50vmin;
-  background-color: olivedrab;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-}
-
-#number {
-  user-select: none;
-  font-size: 10rem;
-  color: white;
-}
 
 body {
   background: #edf0f1;
