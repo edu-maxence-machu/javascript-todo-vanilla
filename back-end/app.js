@@ -1,7 +1,7 @@
 require('dotenv').config();
 const express = require('express');
 const bodyParser = require('body-parser');
-const sClick = require('./models/click');
+const sDemo = require('./models/demo');
 
 // export one function that gets called once as the server is being initialized
 module.exports = function(app, server) {
@@ -33,9 +33,9 @@ const io = require('socket.io')(server, {
 
 app.use(function(req, res, next) {req.io = io; next(); });
 
-app.get('/stats/all', (req, res, next) => {
-  sClick.find()
-    .then(clicks => res.status(200).json(clicks))
+app.get('/demo', (req, res, next) => {
+  sDemo.find()
+    .then(demo => res.status(200).json(demo))
     .catch(error => res.status(400).json({ error }));
   });
 }
