@@ -16,10 +16,43 @@
 </head>
 <body>
 
+    <ul id="chat">
+    </ul>
+
+    <form action="" name="message">
+        <input name="inputMessage" type="text">
+        <button type="submit">Envoyer</button>
+    </form>
+    
     
     <script src="https://cdn.socket.io/3.1.3/socket.io.min.js" integrity="sha384-cPwlPLvBTa3sKAgddT6krw0cJat7egBga3DJepJyrLl4Q9/5WLra3rrnMcyTyOnh" crossorigin="anonymous"></script>
     <script>
         const socket = io('http://localhost:3000');
+
+        let chat = document.getElementById('chat');
+
+        console.log(document.forms.message)
+
+        document.forms.message.addEventListener('submit', function(e){
+            e.preventDefault();
+            let inputMessage = document.forms.message.inputMessage.value;
+
+            socket.emit('chat', {
+                data: inputMessage
+            })
+        })
+
+        socket.on('notification', function(notif) {
+            console.log(notif);
+        })
+
+        socket.on('chat', function(message) {
+            console.log(message);
+
+            let msg = document.createElement('li');
+            msg.innerText = message;
+            chat.appendChild(msg);
+        })
     </script>
 </body>
 </html>
