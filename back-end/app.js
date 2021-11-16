@@ -33,10 +33,149 @@ require('./socket/socket')(io);
 
 app.use(function(req, res, next) {req.io = io; next(); });
 
-app.get('/stats/all', (req, res, next) => {
-  sClick.find()
-    .then(clicks => res.status(200).json(clicks))
-    .catch(error => res.status(400).json({ error }));
-  });
-}
+app.get('/stats/days', (req, res, next) => {
 
+  /*
+  Un indice: https://stackoverflow.com/a/15659727 
+  */
+  sClick.aggregate(
+    [
+      { $group : {
+        _id: {
+            year : { $year : "$timestamp" },        
+            month : { $month : "$timestamp" },        
+            day : { $dayOfMonth : "$timestamp" },
+        },
+        count: { $sum: 1 },
+    }}
+    ],
+
+    function(err, result) {
+      if (err) {
+        res.send(err);
+      } else {
+        res.json(result); 
+      }
+    }
+  );
+})
+
+app.get('/stats/avg/days', (req, res, next) => {
+
+  /*
+  Un indice: https://stackoverflow.com/a/15659727 
+  */
+  sClick.aggregate(
+    [
+      { $group : {
+        _id: {
+            year : { $year : "$timestamp" },        
+            month : { $month : "$timestamp" },        
+            day : { $dayOfMonth : "$timestamp" },
+        },
+        count: { $sum: 1 }
+    }}
+    ],
+    function(err, result) {
+      if (err) {
+        res.send(err);
+      } else {
+        /*
+        Calcul de la moyenne
+        */ 
+        // On crée un tableau avec les résultats [17, 2, 1 ,...] 
+
+        let results = result.map((res) => {return res.count});
+
+        // Utilisation de la fonction reduce pour calculer la somme 
+        // Option: utiliser un for
+        
+        let sum = results.reduce((prev, next) => {
+          return prev + next
+        });
+
+        // Calcul de la moyenne
+        let avg = sum / results.length;
+        res.json({avg: avg});
+      }
+    }
+  );
+})
+
+app.get('/stats/avg/session', (req, res, next) => {
+
+  /*
+  Un indice: https://stackoverflow.com/a/15659727 
+  */
+  sClick.aggregate(
+    [
+      { $group : {
+        _id: "$sessionid",
+        count: { $sum: 1 }
+    }}
+    ],
+
+    function(err, result) {
+      if (err) {
+        res.send(err);
+      } else {
+
+        /*
+        Calcul de la moyenne
+        */ 
+        // On crée un tableau avec les résultats [17, 2, 1 ,...] 
+        let results = result.map((res) => {return res.count});
+
+        // Utilisation de la fonction reduce pour calculer la somme 
+        // Option: utiliser un for
+        let sum = results.reduce((prev, next) => {
+          return prev + next
+        });
+
+        let avg = sum / result.length
+
+        res.json({avg: avg}); 
+      }
+    }
+  );
+})
+
+app.get('/stats/avg/user', (req, res, next) => {
+
+  /*
+  Un indice: https://stackoverflow.com/a/15659727 
+  */
+  sClick.aggregate(
+    [
+      { $group : {
+        _id: "$userid",
+        count: { $sum: 1 }
+    }}
+    ],
+
+    function(err, result) {
+      if (err) {
+        res.send(err);
+      } else {
+        /*
+        Calcul de la moyenne
+        */ 
+        // On crée un tableau avec les résultats [17, 2, 1 ,...] 
+        let results = result.map((res) => {return res.count});
+
+        // Utilisation de la fonction reduce pour calculer la somme 
+        // Option: utiliser un for
+        let sum = results.reduce((prev, next) => {
+          return prev + next
+        });
+
+        let avg = sum / result.length
+
+        res.json({avg: avg}); 
+      
+      }
+    }
+  );
+})
+
+}

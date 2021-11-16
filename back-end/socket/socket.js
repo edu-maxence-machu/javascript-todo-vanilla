@@ -21,11 +21,12 @@ io.on('connection', (socket) =>{
 });
   
 // On écoute les messages envoyés dans le canal "plus-one"
-socket.on('plus-one', (msg) => { 
+socket.on('plus-one', (id) => { 
     // Création de l'objet "click" de Mongoose (schéma)
     const click = new sClick({
         timestamp: new Date(),
-        sessionid: socket.id
+        sessionid: socket.id,
+        userid: id
     });
 
     // Sauvegarde dans la base de données

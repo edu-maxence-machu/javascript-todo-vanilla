@@ -22,6 +22,25 @@
     
     <script src="https://cdn.socket.io/3.1.3/socket.io.min.js" integrity="sha384-cPwlPLvBTa3sKAgddT6krw0cJat7egBga3DJepJyrLl4Q9/5WLra3rrnMcyTyOnh" crossorigin="anonymous"></script>
     <script>
+
+        // https://gist.github.com/gordonbrander/2230317
+        const ID = function () {
+        // Math.random should be unique because of its seeding algorithm.
+        // Convert it to base 36 (numbers + letters), and grab the first 9 characters
+        // after the decimal.
+        return '_' + Math.random().toString(36).substr(2, 9);
+        };
+
+        let userid = '';
+        
+        if(localStorage.getItem('userid')){
+            userid = localStorage.getItem('userid');
+        } else {
+            const id = ID();
+            localStorage.setItem('userid', id)
+            userid = id;
+        }
+
         const socket = io('http://localhost:3000');
 
         let circle = document.getElementById('circle');
@@ -30,7 +49,7 @@
         circle.addEventListener('click', handleCookieClick)
 
         function handleCookieClick(){
-            socket.emit('plus-one');
+            socket.emit('plus-one', userid);
         }
 
         socket.on('notif', function(msg){
