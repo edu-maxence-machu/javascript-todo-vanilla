@@ -19,6 +19,14 @@ app.post('/todos', (req, res, next) => {
   });
 });
 
+app.delete('/todos/:id', (req, res, next) => {
+  res.end(`Je supprime ${req.params.id}`)
+})
+
+app.put('/todos/:id', (req, res, next) => {
+  res.end(`Je modifie ${req.params.id}`)
+})
+
 app.use('/todos', (req, res, next) => {
     const stuff = [
       {
