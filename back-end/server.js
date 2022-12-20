@@ -37,31 +37,6 @@ const errorHandler = error => {
 
 const server = http.createServer(app);
 
-const io = require('socket.io')(server, {
-  cors: {
-    origin: "http://127.0.0.1:5501",
-    methods: ["GET", "POST"]
-  }
-})
-
-// Établissement de la connexion à Socket.io
-io.on('connection', (socket) =>{
-
-  socket.on('disconnect', () => {
-    console.log(`user ${socket.id} disconnected`);
-    io.emit('notif', `Bye ${socket.id}`);
-  });
-
-  socket.on('message', (msg) => {
-    console.log(msg);
-    io.emit('message', msg);
-  });
-
-  console.log(`Connecté au client ${socket.id}`)
-  io.emit('notif', `Bonjour à toi ! ${socket.id}`);
-})
-
-
 server.on('error', errorHandler);
 server.on('listening', () => {
   const address = server.address();

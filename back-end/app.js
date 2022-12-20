@@ -6,8 +6,6 @@ const app = express();
 
 const sTodo = require('./models/todo');
 
-module.exports = function(server){
-
 mongoose.connect(`mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@${process.env.DB_URL}/${process.env.DB_NAME}?retryWrites=true&w=majority`,
   { useNewUrlParser: true,
     useUnifiedTopology: true })
@@ -64,6 +62,5 @@ app.put('/todos/:id', (req, res, next) => {
     .then(() => res.status(200).json({ message: 'Todo modifiée'}))
     .catch(error => res.status(400).json({ error }));
 });
-}
 
 module.exports = app;
