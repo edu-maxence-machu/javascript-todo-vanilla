@@ -40,11 +40,11 @@ document.getElementById('item').addEventListener('keydown', function (e) {
 });
 
 function addItem (value) {
-  addItemToDOM(value);
-  document.getElementById('item').value = '';
-
-  data.todo.push(value);
-  dataObjectUpdated('add', value);
+  dataObjectUpdated('add', value).then((item) => {
+    addItemToDOM(item);
+    document.getElementById('item').value = '';
+    data.todo.push(item);
+  });
 }
 
 function renderTodoList(data) {
@@ -61,38 +61,47 @@ function renderTodoList(data) {
   }
 }
 
-function dataObjectUpdated(type, item) {
+async function dataObjectUpdated(type, item) {
   switch(type){
     case 'add':
-        fetch(`${server}/todos`, {
+        return await fetch(`${server}/todos`, {
           method: "POST",
           headers: {
             'Accept': 'application/json',
             'Content-Type': 'application/json'
           },
           body: JSON.stringify(item)
+        }).then((res) => {
+          return res.json();
+        }).then((json) => {
+          return json?.data;
         })
-      break;
     case 'edit':
-      fetch(`${server}/todos/${item.id}`, {
+      return await fetch(`${server}/todos/${item.id}`, {
         method: "PUT",
         headers: {
           'Accept': 'application/json',
           'Content-Type': 'application/json'
         },
         body: JSON.stringify(item)
+      }).then((res) => {
+        return res.json();
+      }).then((json) => {
+        return json?.data;
       })
-    break;
     case 'delete':
-      fetch(`${server}/todos/${item.id}`, {
+      return fetch(`${server}/todos/${item.id}`, {
         method: "DELETE",
         headers: {
           'Accept': 'application/json',
           'Content-Type': 'application/json'
         },
         body: JSON.stringify(item)
+      }).then((res) => {
+        return res.json();
+      }).then((json) => {
+        return json?.data;
       })
-    break;
     default:
       break;
   }

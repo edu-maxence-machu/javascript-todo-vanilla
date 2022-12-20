@@ -26,9 +26,10 @@ app.use(express.json());
 app.post('/todos', (req, res, next) => {
 
   const todo = new sTodo({...req.body});
-  todo.save().then(() => {
+  todo.save().then((item) => {
     res.status(201).json({
-      message: 'Todo enregistrée'
+      message: 'Todo enregistrée',
+      data: item
     })
   }).catch((error) => {
     res.status(400).json({error})
