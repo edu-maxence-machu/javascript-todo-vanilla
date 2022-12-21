@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Websocket Démo</title>
+</head>
+<body>
+
+<h1>WEBSOCKET</h1>
+
+<form name="message">
+    <label for="text">Message</label>
+    <input name="text"/>
+
+    <select name="receiver">
+        <option value="all" selected>Tout le monde</option>
+    </select>
+
+    <button type="submit">Envoyer</button>
+</form>
+
+<ul id="list">
+
+</ul>
+
+  <script src="https://cdn.socket.io/3.1.3/socket.io.min.js"></script>
+
+  <script>
+        const socket = io('http://localhost:3000');
+
+        let me = null;
+
+        socket.on('connect', function() {
+            me = socket.id;
+            console.log(me);
+            socket.on(me, function name(text) {
+                alert('Vous avez un message privé: ' + text)
+            })
+        });
+
+        socket.on('notification', function(msg){
+            console.log('Nouvelle notification: ', msg);
+        }) 
+
+        socket.on('enter', enterOrLeave) 
+        socket.on('exit', enterOrLeave) 
+
+        function enterOrLeave(people, socketId){
+            console.log('Utilisateurs rafraichis: ', people);
+
+            let select = document.forms.message.receiver;
+            select.innerHTML = '';
+            let optionAll = document.createElement('option');
+            optionAll.value = 'all';
+            optionAll.innerText = `Tout le monde (${people.length})`;
+            select.appendChild(optionAll);
+
+            people.forEach(person => {
+                let option = document.createElement('option');
+                option.value = person.id;
+                option.innerText = person.name;
+                if(person.id === me) {
+                    option.innerText += ' (moi)';
+                }
+                select.appendChild(option);
+            });
+        }
+
+        socket.on('message', function(msg){
+            console.log('Nouveau message: ', msg);
+
+            let list = document.querySelector('#list');
+            let li = document.createElement('li');
+            li.innerText = msg;
+            list.appendChild(li);
+        }) 
+
+        document.forms.message.addEventListener('submit', function(e){
+            e.preventDefault();
+            console.log(document.forms.message.text.value);
+
+            if(document.forms.message.receiver.value === 'all') {
+                socket.emit('message', {
+                    text: document.forms.message.text.value,
+                    from: me
+                });
+            } else {
+                socket.emit('private', {
+                    text: document.forms.message.text.value, 
+                    to: document.forms.message.receiver.value,
+                    from: me
+                });
+            }
+        })
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <form name="todo_form" method="POST">
+        <label for="form_title">Titre de la todo</label>
+        <input id="form_title" name="title" placeholder="Titre de la todo">
+        <button>Envoyer</button>
+    </form>
+
+    <ul id="list">
+
+    </ul>
+
+    <script type="text/javascript">
+        function refreshList(data){
+            let list = document.querySelector('#list');
+            list.innerHTML = '';
+            
+            for (let i = 0; i < data.length; i++) {
+                let li = document.createElement('li');
+                li.dataset.id = data[i]._id;
+                li.innerHTML = data[i].title;
+                list.appendChild(li);
+            }
+        }
+
+        async function fetchList(){
+            let resp = await fetch('http://localhost:3000/todos');
+            return await resp.json();
+        }
+
+        async function fetchAndRefesh(){
+            let data = await fetchList();
+            refreshList(data);
+        }
+
+        document.addEventListener('DOMContentLoaded',async () => {
+
+        
+            fetchAndRefesh();
+
+            const forms = document.forms;
+            const form = forms.todo_form;
+            
+            form.addEventListener('submit', async (e) => {
+                e.preventDefault();
+
+                const formData = new FormData(form);
+                const formJsonData = Object.fromEntries(formData);
+                formJsonData.completed = false;
+                
+                const resp = await fetch('http://localhost:3000/todos', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(formJsonData)
+                });
+                let json = await resp.json();
+
+                fetchAndRefesh();
+            })
+        })
+    </script>
+</body>
+</html>
